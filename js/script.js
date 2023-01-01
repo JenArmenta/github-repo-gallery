@@ -4,6 +4,8 @@ const username = "JenArmenta";
 const repoList = document.querySelector(".repo-list");
 const allReposContainer = document.querySelector(".repos");
 const repoData = document.querySelector(".repo-data");
+const viewReposButton = document.querySelector(".view-repos");
+const filterInput = document.querySelector(".filter-repos");
 
 
 //Create and name an async function to fetch information from your GitHub profile
@@ -32,10 +34,10 @@ gitUserInfo();
     //Append the div to the overview element. 
     overview.append(div);
     //At the bottom of your second function which displays your GitHub user data, call the async function that fetches your repos.
-    gitRepos();
+    gitRepos(username);
 };
 
-const gitRepos = async function () {
+const gitRepos = async function (username) {
     const fetchRepos = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`);
     const repoData = await fetchRepos.json();
     //At the bottom of the async function fetching your repos, call the function you just created to display info about each repository. As an argument, pass the JSON response data for the repos.
@@ -43,6 +45,8 @@ const gitRepos = async function () {
 };
 
 const displayRepos = function (repos) {
+    //show the filterInput element. 
+    filterInput.classList.remove("hide");
 //loop and create a list item for each repo and give each item: a class of “repo” and an <h3> element with the repo name. 
     for (const repo of repos) {
         const repoItem = document.createElement("li");
@@ -84,6 +88,8 @@ const languages = [];
 
 
 const displayRepoInfo = function (repoInfo, languages) {
+    //remove the class of “hide” from the Back to Repo Gallery button.
+    viewReposButton.classList.remove("hide");
     //empty the HTML of the section with a class of “repo-data” where the individual repo data will appear.
     repoData.innerHTML = "";
     //Hide the element with the class of “repos”.
@@ -103,3 +109,30 @@ const displayRepoInfo = function (repoInfo, languages) {
     //Append the new div element to the section with a class of “repo-data”. Unhide (show) the “repo-data” element.
     repoData.append(div);
 };
+
+viewReposButton.addEventListener("click", function () {
+    // unhide (display) the section with the class of “repos”
+    allReposContainer.classList.remove("hide");
+    //Add the “hide” class to the section where the individual repo data will appear. 
+    repoData.classList.add("hide");
+    //add the “hide” class to the Back to Repo Gallery button itself. 
+    viewReposButton.classList.add("hide");
+  });
+
+  filterInput.addEventListener("input", function (e) {
+    const searchText = e.target.value;
+    const repos = document.querySelectorAll(".repo");
+    const searchLowerText = searchText.toLowerCase();
+
+
+    //Loop through each repo inside your repos element. Inside the loop, 
+    //create a variable and assign it to the lowercase value of the innerText. of each repo.
+    for (const repo of repos) {
+        const repoLowerText = repo.innerText.toLowerCase();
+        if (repoLowerText.includes(searchLowerText)) {
+            repo.classList.remove("hide");
+        } else {
+            repo.classList.add("hide");
+        }
+    }
+  });
